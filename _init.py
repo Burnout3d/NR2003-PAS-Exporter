@@ -1,3 +1,4 @@
+# BASED ON ASE EXPORTER SCRIPT BY MCampagnini AND FORKED BY rodrisilvamd
 bl_info = {
     "name": "NR2003 PAS Exporter",
     "author": "Burnout3D",
