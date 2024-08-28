@@ -157,13 +157,22 @@ class ExportPapyrus(Operator, ExportHelper):
                             #file.write('\t\t}\n')
                         
                         file.write("\t\t\t}\n")
-                        file.write("\t\t\tNUM_FACES {}\n".format(len(mesh.polygons)))
-                        
+                        # Function to rotate UVs by 180 degrees
+                        def rotate_uvs_180(uv_coords):
+                            return [(1.0 - uv.x, 1.0 - uv.y) for uv in uv_coords]
+
+                        # Assuming you have the object and material selected
                         uv_layer = mesh.uv_layers.active.data if mesh.uv_layers.active else None
+
+                        # Write the number of faces
+                        file.write("\t\t\tNUM_FACES {}\n".format(len(mesh.polygons)))
+
+                        # Iterate through the polygons and apply the UV rotation
                         for i, p in enumerate(mesh.polygons):
                             if uv_layer:
                                 uv_coords = [uv_layer[loop_index].uv for loop_index in p.loop_indices]
-                                base_texture_coords = ' '.join(f'({uv.x:.4f}, {uv.y:.4f})' for uv in uv_coords)
+                                rotated_uv_coords = rotate_uvs_180(uv_coords)
+                                base_texture_coords = ' '.join(f'({uv[0]:.4f}, {uv[1]:.4f})' for uv in rotated_uv_coords)
                                 shininess_map_coords = base_texture_coords  # Assuming the same UVs for shininess map
                             else:
                                 base_texture_coords = "(0.0, 0.0) (0.0, 0.0) (0.0, 0.0)"
@@ -191,4 +200,5 @@ def unregister():
     bpy.types.TOPBAR_MT_file_export.remove(menu_func_export)
 
 if __name__ == "__main__":
+    register()
     register()
