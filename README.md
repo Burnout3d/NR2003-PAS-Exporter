@@ -16,6 +16,7 @@ First [download the pre-release](https://github.com/Burnout3d/NR2003-PAS-Exporte
 
 Now open the scene I provided, also in src\nr2003-pas-exporter\NR2003_Material.blend It should open automatically in the Shading workspace, but if it doesn't click the Shading tab at the top of the screen. Make sure the sphere is selected so you can see its material. You'll see a few things here. The main item that makes this script work is the red material group node I made. 
 ![Screenshot of material group](docs/images/screenshot-material-group.png)
+
 This node group must be included inside every material you intend to export to PAS except for bounding boxes, shadows, or any other object that requires no textures. The top 4 inputs are for your textures, Diffuse, Shiny, Environment, Light Map. If any of your textures has alpha or opacity (PNG for example) They will not be exported with DISABLE_ALPHA. The other inputs are for you to adjust just like in 3ds Max. 
 
 > [!WARNING]
