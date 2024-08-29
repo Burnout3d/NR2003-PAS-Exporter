@@ -112,46 +112,60 @@ class ExportPapyrus(Operator, ExportHelper):
                         if "NR2003-Material" in mat.node_tree.nodes:
                             node_group = mat.node_tree.nodes["NR2003-Material"]
                             
-                            # Initialize a list to store texture paths and their titles
-                            texture_paths = []
-                            
-                            # Iterate through the inputs of the node group
-                            for input in node_group.inputs:
-                                if input.is_linked:
-                                    linked_node = input.links[0].from_node
-                                    if linked_node.type == 'TEX_IMAGE':
-                                        relative_path = linked_node.image.filepath
-                                        absolute_path = bpy.path.abspath(relative_path)
-                                        normalized_path = os.path.normpath(absolute_path)
-                                        if os.path.isabs(normalized_path):
-                                            final_path = normalized_path
-                                        else:
-                                            final_path = os.path.join(bpy.path.abspath("//"), normalized_path)
-                                        
-                                        texture_paths.append((input.name, final_path))
-                                        
-                                        if input.name == "Base Texture":
-                                            file.write(f'\t\t\t\tBASE_TEXTURE "{final_path}"\tDISABLE_ALPHA\n')
-                                        elif input.name == "Shininess Map Texture":
-                                            file.write(f'\t\t\t\tSHININESS_MAP_TEXTURE "{final_path}"\tDISABLE_ALPHA\n')
-                                        elif input.name == "Environment Map Texture":
-                                            file.write(f'\t\t\t\tENVIRONMENT_MAP_TEXTURE "{final_path}"\tDISABLE_ALPHA\n')
-                                else:
-                                    if hasattr(input, 'default_value'):
-                                        if isinstance(input.default_value, (bpy.types.bpy_prop_array, list, tuple)) and len(input.default_value) == 4:
-                                            formatted_value = ' '.join(f"{v:.5f}" for v in input.default_value[:3])
-                                            file.write(f'\t\t\t\t{input.name.upper()} {formatted_value}\n')
-                                        elif isinstance(input.default_value, (bpy.types.bpy_prop_array, list, tuple)) and len(input.default_value) == 3:
-                                            formatted_value = ' '.join(f"{v:.5f}" for v in input.default_value)
-                                            file.write(f'\t\t\t\t{input.name.upper()} {formatted_value}\n')
-                                        else:
-                                            file.write(f"\t\t\t\t{input.name} {input.default_value:.5f}\n")
+                        # Initialize a list to store texture paths and their titles
+                        texture_paths = []
+
+                        # List of attributes that should always be shown
+                        always_show_attributes = ["MATERIAL_AMBIENT", "MATERIAL_DIFFUSE", "MATERIAL_SPECULAR", "MATERIAL_SHININESS", "MATERIAL_REFLECTIVITY", "MATERIAL_OPACITY"]
+
+                        # Function to check if an image has an alpha channel
+                        def has_alpha_channel(image):
+                            return image.depth == 32
+
+                        # Iterate through the inputs of the node group
+                        for input in node_group.inputs:
+                            if input.is_linked:
+                                linked_node = input.links[0].from_node
+                                if linked_node.type == 'TEX_IMAGE':
+                                    relative_path = linked_node.image.filepath
+                                    absolute_path = bpy.path.abspath(relative_path)
+                                    normalized_path = os.path.normpath(absolute_path)
+                                    if os.path.isabs(normalized_path):
+                                        final_path = normalized_path
                                     else:
+                                        final_path = os.path.join(bpy.path.abspath("//"), normalized_path)
+                                    
+                                    texture_paths.append((input.name, final_path))
+                                    
+                                    disable_alpha = "" if has_alpha_channel(linked_node.image) else "\tDISABLE_ALPHA"
+                                    
+                                    if input.name == "Base Texture":
+                                        file.write(f'\t\t\t\tBASE_TEXTURE "{final_path}"{disable_alpha}\n')
+                                    elif input.name == "Shininess Map Texture":
+                                        file.write(f'\t\t\t\tSHININESS_MAP_TEXTURE "{final_path}"{disable_alpha}\n')
+                                    elif input.name == "Environment Map Texture":
+                                        file.write(f'\t\t\t\tENVIRONMENT_MAP_TEXTURE "{final_path}"{disable_alpha}\n')
+                            else:
+                                if hasattr(input, 'default_value'):
+                                    if isinstance(input.default_value, (bpy.types.bpy_prop_array, list, tuple)) and len(input.default_value) == 4:
+                                        formatted_value = ' '.join(f"{v:.5f}" for v in input.default_value[:3])
+                                        if input.name.upper() in always_show_attributes:
+                                            file.write(f'\t\t\t\t{input.name.upper()} {formatted_value}\n')
+                                    elif isinstance(input.default_value, (bpy.types.bpy_prop_array, list, tuple)) and len(input.default_value) == 3:
+                                        formatted_value = ' '.join(f"{v:.5f}" for v in input.default_value)
+                                        if input.name.upper() in always_show_attributes:
+                                            file.write(f'\t\t\t\t{input.name.upper()} {formatted_value}\n')
+                                    else:
+                                        if input.name.upper() in always_show_attributes:
+                                            file.write(f"\t\t\t\t{input.name} {input.default_value:.5f}\n")
+                                else:
+                                    if input.name.upper() in always_show_attributes:
                                         file.write(f"\t\t\t\tInput '{input.name}' has no default value attribute.\n")
-                            
-                            # file.write the texture paths and their titles
-                            for title, path in texture_paths:
-                                file.write(f'\t\t\t\t{title.upper()} "{path}"\tDISABLE_ALPHA\n')
+
+                        # file.write the texture paths and their titles
+                        for title, path in texture_paths:
+                            disable_alpha = "" if has_alpha_channel(bpy.data.images.load(path)) else "\tDISABLE_ALPHA"
+                            file.write(f'\t\t\t\t{title.upper()} "{path}"{disable_alpha}\n')
                             
                             #file.write('\t\t\t}\n')
                             #file.write('\t\t}\n')
@@ -200,5 +214,4 @@ def unregister():
     bpy.types.TOPBAR_MT_file_export.remove(menu_func_export)
 
 if __name__ == "__main__":
-    register()
     register()
