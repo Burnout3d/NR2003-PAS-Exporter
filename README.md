@@ -31,5 +31,6 @@ Keep in mind the script doesn't know what scale everything is in. So when you mo
 ## Notes
 This is not fully functional yet. Current tuorials for modding NR2003 with 3ds Max are still very much useful. Read them. 
 Currently, IK animation export is not supported yet, so no animated drivers. I do not know what exactly all works yet. I just know I can export a car to the game and get it on track. I'm making this public so I can gather feedback and see what works and what doesn't. I expect there to be a ton of issues. I hope someone can test double sided materials, I heard that works in 3ds Max, not sure if that works with this script. There's a lot of unknowns. 
+### The next version of the script will require Blender 4.0 or lower. It's not compatible with Blender 4.1 or higher due to the way normals are exported.
 
 And hey, it's open source, if you don't like what I'm doing, how I'm doing it, you have the code, go have fun yourself. Try to expand on it, maybe see if you can auto-generate a PSG script to help modders cut down on time. Don't sit back and beg for stuff, get your hands dirty and get to work. 
