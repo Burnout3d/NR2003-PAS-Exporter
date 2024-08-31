@@ -18,7 +18,7 @@
 bl_info = {
     "name": "Papyrus ASCII Scene Exporter",
     "author": "Burnout3D",
-    "blender": (4, 2, 0),
+    "blender": (4, 0, 0),
     "doc_url": "https://github.com/Burnout3d/NR2003-PAS-Exporter",
     "category": "Import-Export",
 }
