@@ -22,7 +22,6 @@ bl_info = {
     "doc_url": "https://github.com/Burnout3d/NR2003-PAS-Exporter",
     "category": "Import-Export",
 }
-
 import os
 import bpy
 import bmesh
@@ -238,10 +237,17 @@ class ExportPapyrus(Operator, ExportHelper):
                                 uv_coords = [uv_layer[loop_index].uv for loop_index in p.loop_indices]
                                 rotated_uv_coords = rotate_uvs_180(uv_coords)
                                 base_texture_coords = ' '.join(f'({uv[0]:.4f}, {uv[1]:.4f})' for uv in rotated_uv_coords)
-                                shininess_map_coords = base_texture_coords  # Assuming the same UVs for shininess map
                             else:
                                 base_texture_coords = "(0.0, 0.0) (0.0, 0.0) (0.0, 0.0)"
-                                shininess_map_coords = base_texture_coords
+                            
+                            # Check for a separate UV layer for the shininess map
+                            shininess_uv_layer = mesh.uv_layers.get("shininess_map")
+                            if shininess_uv_layer:
+                                shininess_uv_coords = [shininess_uv_layer.data[loop_index].uv for loop_index in p.loop_indices]
+                                rotated_shininess_uv_coords = rotate_uvs_180(shininess_uv_coords)
+                                shininess_map_coords = ' '.join(f'({uv[0]:.4f}, {uv[1]:.4f})' for uv in rotated_shininess_uv_coords)
+                            else:
+                                shininess_map_coords = base_texture_coords  # Fallback to base texture coordinates if no separate UV layer
                             
                             file.write(f'\t\t\tTEXTURE_FACE {i} BASE_TEXTURE {base_texture_coords} SHININESS_MAP_TEXTURE {shininess_map_coords}\n')
                         file.write("\t\t}\n")
