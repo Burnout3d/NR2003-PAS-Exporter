@@ -26,7 +26,7 @@ You should feel sort of at home with this if you've modded before or used 3ds Ma
 Keep in mind the script doesn't know what scale everything is in. So when you model, keep your stuff to scale. make3do I believe expects everything to be exported in meters. So make sure Blender's unit of measurment is set to meters to ensure less of a headache. 
 
 > [!NOTE]
-> If you have problems installing the script in earlier versions of Blender, open the _init.py in notepad and change "blender": (4, 2, 0), to whatever your version is. I can't guarantee it'll work, but it's worth a shot. 
+> If you have problems installing the script in earlier versions of Blender, open the _init.py in notepad and change "blender": (4, 0, 0), to whatever your version is. I can't guarantee it'll work, but it's worth a shot. 
 
 ## Notes
 This is not fully functional yet. Current tuorials for modding NR2003 with 3ds Max are still very much useful. Read them. 
